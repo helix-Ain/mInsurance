@@ -1,0 +1,8 @@
+mInsurance.sln
+mInsurance.phpproj
+.vs/
+.idea/
+.htaccess
+conf/
+/mInsurance.phpproj.user
+Cache/*
