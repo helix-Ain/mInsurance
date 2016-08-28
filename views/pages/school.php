@@ -132,7 +132,7 @@ if(!$role['admin']) {
             success: function (result) {
                 if (result.code == 0) {
                     $.each(result.data, function (i, item) {
-                        $('#listview tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.name + '</td><td>' + item.telephone + '</td><td>' + item.description + '</td><td><a class="btn btn-info btn-xs" onclick="modifySchool('+item.id+')">修改<a class="btn btn-danger btn-xs" style="margin-left:5px;" onclick="deleSchool('+item.id+')">删除</a></td></tr>');
+                        $('#listview tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.name + '</td><td>' + item.telephone + '</td><td>' + item.description + '</td><td><a class="btn btn-info btn-sm" onclick="modifySchool('+item.id+')">修改<a class="btn btn-danger btn-sm" style="margin-left:5px;" onclick="deleSchool('+item.id+')">删除</a></td></tr>');
                     });
                 }
                 else {
@@ -194,20 +194,22 @@ if(!$role['admin']) {
         });
         
         $('#modify-school-submit').click(function () {
-            $.ajax({
-                url: '/Ajax/schoolAjax.php',
-                type: 'post',
-                data: { action: 'modify', id: $('#modify-school-id').val(), name: $('#modify-school-name').val(), telephone: $('#modify-school-telephone').val(), description: $('#modify-school-description').val() },
-                dataType: 'json',
-                success: function (result) {
-                    if (result.code == 0) {
-                        location.reload();
+            if (confirm('确认修改学院,该操作将影响学院下所有的教师,专业,班级和学生信息?')) {
+                $.ajax({
+                    url: '/Ajax/schoolAjax.php',
+                    type: 'post',
+                    data: { action: 'modify', id: $('#modify-school-id').val(), name: $('#modify-school-name').val(), telephone: $('#modify-school-telephone').val(), description: $('#modify-school-description').val() },
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.code == 0) {
+                            location.reload();
+                        }
+                        else {
+                            window.console.log(result.code + ':' + result.desc);
+                        }
                     }
-                    else {
-                        window.console.log(result.code+':'+result.desc);
-                    }
-                }
-            });
+                });
+            }
         });
     });
 
@@ -224,7 +226,7 @@ if(!$role['admin']) {
         if (!(id instanceof Array)) {
             id = [id];
         }
-        if (confirm('确认删除该学院吗?')) {
+        if (confirm('确认删除学院,该操作将删除学院下所有的教师,专业,班级和学生信息?')) {
             $.ajax({
                 url: '/Ajax/schoolAjax.php',
                 data: { action: 'dele', id: id },

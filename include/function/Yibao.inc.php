@@ -26,8 +26,9 @@ class Yibao
         'identification' => '身份证号',
         'birthday' =>   '出生年月',
         'insured'  =>   '参保',
-        'levelname'=>   '奖学金名称',
-        'money'    =>   '奖学金金额',
+        'levelname'=>   '奖学金',
+        'money'    =>   '金额',
+        'term'     =>   '学期',
         'note'     =>   '备注'
     );
     /*
@@ -71,10 +72,26 @@ class Yibao
     /*
      * 字段导出
      */
-    public static function exportExcelByField($condition = array('school' => NULL,'major'=>NULL,'class' => NULL, 'insured' => NULL),$fields=NULL)
+    public static function exportExcelByField($condition = array('school' => NULL,'major'=>NULL,'classid' => NULL, 'insured' => NULL,'levelid'=>NULL,'termid'=>NULL),$fields=NULL,$isLevel=false)
     {
         $studentDal = new StudentDAL();
-        $studentList = $studentDal->GetStudentList($condition);
+        $scholarshipDal = new ScholarshipDAL();
+        if(!$isLevel){
+            $studentList = $studentDal->GetStudentList($condition);
+        }else{
+            $studentList = $scholarshipDal->GetScholarshipList($condition);
+            if(in_array('term',$fields)&&$condition['termid']!=NULL){
+                $term = $scholarshipDal->GetTermOne(['id'=>$condition['termid']])['title'];
+                foreach($studentList as &$item){
+                    $item['term'] = $term;
+                }
+            }else if(in_array('term',$fields)&&$condition['termid']==NULL){
+                foreach($studentList as &$item){
+                    $term = $scholarshipDal->GetTermOne(['id'=>$item['termid']])['title'];
+                    $item['term'] = $term;
+                }
+            }
+        }
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->getProperties()->setCreator('wyuxsc')->setLastModifiedBy('wyuxsc');
         $objPHPExcel->createSheet();
@@ -86,36 +103,28 @@ class Yibao
             $asc++;
         }
         $num = 2;
-        foreach ($studentList as $item) {
-            if($item['insured']=='1'){
-                    $item['insured']='是';
-            }
+        foreach ($studentList as &$item) {
+            if(isset($item['insured'])){
+                if($item['insured']=='1'){
+                    $item['insured']='已参保';
+                }
                 else if(empty($item['insured'])){
-                    $item['insured']='否';
+                    $item['insured']='未参保';
                 }
-                if(!empty($item['scholarship'])){
-                    $item['scholarship'] = unserialize($item['scholarship']);
-                    $scholarship = '';
-                    foreach($item['scholarship'] as $item){
-                        $scholarship .= $item['scholarship_name'].':'+$item['money'];
-                        if($item != end($item['scholarship'])){
-                            $scholarship .= '\n';
-                        }
-                    }
-                }
-                $asc = 66;
-                $objSheet->setCellValue('A'.$num,$num-1);
-                foreach($fields as $field){
-                    $objSheet->setCellValue(chr($asc).$num,$item[$field]);
-                    $asc++;
-                }
-                $num++;
             }
-            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-            header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment;filename="'.uniqid().'.xls"');
-            $objWriter->save('php://output');
-            exit;
+            $asc = 66;
+            $objSheet->setCellValue('A'.$num,$num-1);
+            foreach($fields as $field){
+                $objSheet->setCellValue(chr($asc).$num,$item[$field]);
+                $asc++;
+            }
+            $num++;
+        }
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'.uniqid().'.xls"');
+        $objWriter->save('php://output');
+        exit;
     }
     /*
      * 导入
@@ -157,13 +166,14 @@ class Yibao
         $row = array();
         $fileType = PHPExcel_IOFactory::identify($filename);
         $objReader = PHPExcel_IOFactory::createReader($fileType);
-        $objPHPExcel = $objReader->load($filename);        
+        $objPHPExcel = $objReader->load($filename);
+        $objPHPExcel->setActiveSheetIndex(0);
         $objWorksheet = $objPHPExcel->getActiveSheet();
         $highestRow = $objWorksheet->getHighestRow();
 
         $sheetdata = $objWorksheet->toArray();
 
-        for ($i = 2; $i < $highestRow; $i++) {
+        for ($i = 1; $i < $highestRow; $i++) {
             $row['stuid'] = $sheetdata[$i][4];
             $row['name'] = $sheetdata[$i][5];
             $row['school'] = $sheetdata[$i][1];
@@ -174,10 +184,11 @@ class Yibao
             $row['birthday'] = date('Y-m-d', strtotime($sheetdata[$i][8]));
             $row['insured']=$sheetdata[$i][9];
             $row['note'] = $sheetdata[$i][10];
-            if (!$studentdal->GetStudentOne(array('stuid' => $row['stuid'])))
+            if (!$studentdal->GetStudentOne(array('stuid' => $row['stuid']))){
                 $data['succeeddata'][] = $row;
-            else
+            }else{
                 $data['faileddata'][] = $row;
+            }
         }
         return $data;
     }

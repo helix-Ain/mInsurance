@@ -26,7 +26,6 @@ else if ($action == 'modify')
     modifySchool($_REQUEST);
 else
     echo 'fuck you bitch';
-
 function getSchoolList($params)
 {
     $schoolDal = new SchoolDAL();
@@ -48,13 +47,12 @@ function getSchoolList($params)
     }
     echo json_encode($response);
 }
-
 function deleSchool($params)
 {
-    $schoolDal = new SchoolDAL();
+    $schoolDal  = new SchoolDAL();
 	$teacherDal = new TeacherDAL();
-	$majorDal = new MajorDAL();
-	$classDal = new ClassDAL();
+	$majorDal   = new MajorDAL();
+	$classDal   = new ClassDAL();
 	$studentDal = new StudentDAL();
 	$scholarshipDal = new ScholarshipDAL();
     if(!is_array($params['id'])){
@@ -66,16 +64,15 @@ function deleSchool($params)
     foreach ($info['id'] as $id) {
     	$school = $schoolDal->GetSchoolOne(['id'=>$id])['name'];
         $flag = $flag && $schoolDal->DeleteSchool(['id' => $id]);
-		$flag = $flag && $teacherDal->DeleteTeacher(['schoolid'=>$id]);
-		$flag = $flag && $majorDal->DeleteMajor(['schoolid'=>$id]);
-		$flag = $flag && $classDal->DeleteClass(['schoolid'=>$id]);
+		$teacherDal->DeleteTeacher(['schoolid'=>$id]);
+		$majorDal->DeleteMajor(['schoolid'=>$id]);
+		$classDal->DeleteClass(['schoolid'=>$id]);
 		$students = $studentDal->GetStudentList(['school'=>$school]);
 		foreach($students as $student){
-			$flag = $flag && $scholarshipDal->UnsetGainer(['stuid'=>$student['stuid']]);
+			$scholarshipDal->UnsetGainer(['stuid'=>$student['stuid']]);
 		}
-		$flag = $flag && $studentDal->DeleteStudent(['school'=>$school]);
+		$studentDal->DeleteStudent(['school'=>$school]);
     }
-	
     if ($flag)
         $response = array(
             'code' => 0,
@@ -88,12 +85,11 @@ function deleSchool($params)
         );
     echo json_encode($response);
 }
-
 function addSchool($params)
 {
     $schoolDAL = new SchoolDAL();
-    $info['name'] = isset($params['name']) ? $params['name'] : NULL;
-    $info['telephone'] = isset($params['telephone']) ? $params['telephone'] : NULL;
+    $info['name']        = isset($params['name']) ? $params['name'] : NULL;
+    $info['telephone']   = isset($params['telephone']) ? $params['telephone'] : NULL;
     $info['description'] = isset($params['description']) ? $params['description'] : NULL;
     $result = $schoolDAL->CreateSchool($info);
     if ($result)
@@ -107,25 +103,28 @@ function addSchool($params)
             'desc' => '操作失败'
         );
     echo json_encode($response);
-
 }
-
 function modifySchool($params)
 {
-    $schoolDAL = new SchoolDAL();
-    $info['name'] = isset($params['name']) ? $params['name'] : NULL;
-    $info['telephone'] = isset($params['telephone']) ? $params['telephone'] : NULL;
+    $schoolDal  = new SchoolDAL();
+    $studentDal = new StudentDAL();
+    $oldschoolname = $schoolDal->GetSchoolOne(['id'=>$params['id']])['name'];
+    $info['name']        = isset($params['name']) ? $params['name'] : NULL;
+    $info['telephone']   = isset($params['telephone']) ? $params['telephone'] : NULL;
     $info['description'] = isset($params['description']) ? $params['description'] : NULL;
-    $result = $schoolDAL->UpdateSchool(array('id' => $params['id']), $info);
-    if ($result)
+    $result = $schoolDal->UpdateSchool(array('id' => $params['id']), $info);
+    if ($result){
+        $studentDal->UpdateStudent(['school'=>$oldschoolname],['school'=>$info['name']]);
         $response = array(
             'code' => 0,
             'desc' => '操作成功'
         );
-    else
+    }
+    else{
         $response = array(
             'code' => 1,
             'desc' => '操作失败'
         );
+    }
     echo json_encode($response);
 }

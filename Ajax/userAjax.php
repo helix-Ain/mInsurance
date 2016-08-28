@@ -48,7 +48,8 @@ function logout($params){
 function getLoginInfo($params){
     if (Auth::AdminCheck()) {
         $adminDal=new AdminDAL();
-        $data=$adminDal->GetAdminList();
+        $teacherDal = new TeacherDAL();
+        $data = array_merge($adminDal->GetAdminList(),$teacherDal->GetTeacherList());
         $response = array(
             'code' => 0,
             'data' => $data,
@@ -56,7 +57,7 @@ function getLoginInfo($params){
         );
     } else if (Auth::TeacherCheck()) {
         $teacherDal=new TeacherDAL();
-        $data=$teacherDal->GetTeacherList();
+        $data=$teacherDal->GetTeacherOne(['id'=>$_SESSION['teacher_userid']]);
         $response = array(
             'code' => 0,
             'data' => $data,

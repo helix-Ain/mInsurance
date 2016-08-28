@@ -148,7 +148,7 @@ if(!$role['admin']) {
                 if (result.code == 0) {
                     $.each(result.data, function (i, item) {
                         var day = new Date(item.logintime * 1000);
-                        $('#listview  tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.title + '</td><td>'+item.starttime+'</td><td>'+item.endtime+'</td><td>'+checkEnabled(item.enabled,item.id)+'</td><td><a class="btn btn-info btn-xs" onclick="modifyterm('+item.id+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-xs" onclick="deleterm('+item.id+')">删除</a></td></tr>');
+                        $('#listview  tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.title + '</td><td>'+item.starttime+'</td><td>'+item.endtime+'</td><td>'+checkEnabled(item.enabled,item.id)+'</td><td><a class="btn btn-info btn-sm" onclick="modifyterm('+item.id+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-sm" onclick="deleterm('+item.id+')">删除</a></td></tr>');
                     });
                 }
                 else {
@@ -207,6 +207,7 @@ if(!$role['admin']) {
                 deleterm(ids);
         });
         $('#modify-term-submit').click(function () {
+            if (confirm('确认修改学期,该操作将修改学期下所有的授奖信息?'))
             $.ajax({
                 url: '/Ajax/scholarshipterm.php',
                 type: 'post',
@@ -236,7 +237,7 @@ if(!$role['admin']) {
             if (!(id instanceof Array)) {
                 id = [id];
             }
-            if (confirm('确认删除?')) {
+            if (confirm('确认删除学期,该操作将删除学期下所有的授奖信息?')) {
                 $.ajax({
                     url: '/Ajax/scholarshiptermAjax.php',
                     data: { action: 'dele', id: id },

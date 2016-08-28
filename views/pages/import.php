@@ -13,13 +13,17 @@ if(!($role['admin'] || $role['teacher'])) {
         <div class="result-wrap">
             <div class="result-title" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 5px;">
                 <div class="result-list">
-                    <a href="javascript:" id="btn-shoudong">
+                    <a href="javascript:void(0)" id="btn-shoudong">
                         <span class="glyphicon glyphicon-plus"></span>
                         手动导入
                     </a>
-                    <a href="javascript:" id="btn-biaoge">
+                    <a href="javascript:void(0)" id="btn-biaoge">
                         <span class="glyphicon glyphicon-file"></span>
                         表格导入
+                    </a>
+                    <a href="../../public/template.xls">
+                        <span class="glyphicon glyphicon-download"></span>
+                        导入表格模板下载
                     </a>
                 </div>
             </div>

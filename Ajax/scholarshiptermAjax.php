@@ -79,8 +79,8 @@ function addScholarshipTerm($params)
 {
     $scholarshipDal = new ScholarshipDAL();
     $info['title'] = isset($params['title']) ? $params['title'] : NULL;
-    $info['starttime'] = isset($params['starttime']) ? date('Y-m-d h:i:s',intval($params['starttime'])) : date('Y-m-d h:i:s', time());
-    $info['endtime'] = isset($params['endtime']) ? date('Y-m-d h:i:s',intval($params['endtime'])) : date('Y-m-d h:i:s', time() + 172800);
+    $info['starttime'] = isset($params['starttime']) ? $params['starttime']: date('Y-m-d h:i:s', time());
+    $info['endtime'] = isset($params['endtime']) ? $params['endtime'] : date('Y-m-d h:i:s', time() + 172800);
     $info['enabled'] = isset($params['enabled']) ? $params['enabled'] : NULL;
     $result = $scholarshipDal->CreateTerm($info);
     if ($result)

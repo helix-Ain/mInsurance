@@ -26,11 +26,10 @@ else if ($action == 'modify')
     modifyMajor($_REQUEST);
 else
     echo 'fuck you bitch';
-
 function getMajorList($params)
 {
-    $majorDal = new MajorDAL();
-    $schoolDal=new SchoolDAL();
+    $majorDal  = new MajorDAL();
+    $schoolDal = new SchoolDAL();
     unset($params['action']);
     if(isset($params['school'])&&!isset($params['schoolid'])){
         $params['schoolid']=$schoolDal->GetSchoolOne(['name'=>$params['school']])['id'];
@@ -58,7 +57,6 @@ function getMajorList($params)
     }
     echo json_encode($response);
 }
-
 function deleMajor($params)
 {
     $majorDal = new MajorDAL();
@@ -93,7 +91,6 @@ function deleMajor($params)
         );
     echo json_encode($response);
 }
-
 function addMajor($params)
 {
     $majorDAL = new MajorDAL();
@@ -112,23 +109,28 @@ function addMajor($params)
         );
     echo json_encode($response);
 }
-
 function modifyMajor($params)
 {
-    $majorDAL = new MajorDAL();
+    $majorDal   = new MajorDAL();
+    $schoolDal = new SchoolDAL();
+    $studentDal = new StudentDAL();
+    $oldmajorname = $majorDAL->GetMajorOne(['id'=>$$params['id']])['name'];
     $info['name'] = isset($params['name']) ? $params['name'] : NULL;
     $info['schoolid'] = isset($params['schoolid']) ? $params['schoolid'] : NULL;
-    $id = $params['id'];
-    $result = $majorDAL->UpdateMajor(array('id' => $id), $info);
-    if ($result)
+    $schoolname = $schoolDal->GetSchoolOne(['id'=>$info['schoolid']])['name'];
+    $result = $majorDal->UpdateMajor(array('id' => $params['id']), $info);
+    if ($result){
+        $studentDal->UpdateStudent(['major'=>$oldmajorname],['major'=>$info['name'],'school'=>$schoolname]);
         $response = array(
             'code' => 0,
             'desc' => '操作成功'
         );
-    else
+    }
+    else{
         $response = array(
             'code' => 1,
             'desc' => '操作失败'
         );
+    }
     echo json_encode($response);
 }

@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : localhost
-Source Server Version : 50629
+Source Server Version : 50617
 Source Host           : localhost:3306
 Source Database       : ybsystem
 
 Target Server Type    : MYSQL
-Target Server Version : 50629
+Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2016-08-03 03:06:25
+Date: 2016-08-28 09:51:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -34,7 +34,7 @@ CREATE TABLE `admin` (
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
-INSERT INTO `admin` VALUES ('1', 'admin', 'b605e86d02eef8bfd0646f6a704c17c9', '1234', '0', '1470162002', '127.0.0.1', '2016-04-10 02:07:12');
+INSERT INTO `admin` VALUES ('1', 'admin', '352b80da9d0cb559d2e5b4edbbd83b60', '1234', '0', '1472314553', '::1', '2016-04-10 02:07:12');
 
 -- ----------------------------
 -- Table structure for class
@@ -52,9 +52,7 @@ CREATE TABLE `class` (
 -- ----------------------------
 -- Records of class
 -- ----------------------------
-INSERT INTO `class` VALUES ('1312312312', '1', '1');
-INSERT INTO `class` VALUES ('130801', '1', '1');
-INSERT INTO `class` VALUES ('1234122222', '2', '2');
+INSERT INTO `class` VALUES ('130803', '11', '7');
 
 -- ----------------------------
 -- Table structure for major
@@ -66,13 +64,12 @@ CREATE TABLE `major` (
   `schoolid` int(11) DEFAULT NULL COMMENT '学院ID',
   PRIMARY KEY (`id`),
   KEY `schoolid` (`schoolid`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of major
 -- ----------------------------
-INSERT INTO `major` VALUES ('1', '计算机科学与技术', '1');
-INSERT INTO `major` VALUES ('2', '工商管理', '2');
+INSERT INTO `major` VALUES ('7', '软件工程', '11');
 
 -- ----------------------------
 -- Table structure for scholarship_gainer
@@ -84,13 +81,12 @@ CREATE TABLE `scholarship_gainer` (
   `termid` int(11) NOT NULL DEFAULT '0',
   `levelid` int(11) DEFAULT '-1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of scholarship_gainer
 -- ----------------------------
-INSERT INTO `scholarship_gainer` VALUES ('1', '3113000001', '1', '1');
-INSERT INTO `scholarship_gainer` VALUES ('4', '3113000002', '1', '2');
+INSERT INTO `scholarship_gainer` VALUES ('12', '3113002410', '19', '5');
 
 -- ----------------------------
 -- Table structure for scholarship_level
@@ -102,13 +98,13 @@ CREATE TABLE `scholarship_level` (
   `money` int(11) DEFAULT NULL,
   `note` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of scholarship_level
 -- ----------------------------
-INSERT INTO `scholarship_level` VALUES ('1', 'testlevel123123', '12344', null);
-INSERT INTO `scholarship_level` VALUES ('2', 'testlevel123123', '12344', 'hello');
+INSERT INTO `scholarship_level` VALUES ('5', '国家励志奖学金', '10000', '无');
+INSERT INTO `scholarship_level` VALUES ('6', '吕志和奖学金', '1000', '无');
 
 -- ----------------------------
 -- Table structure for scholarship_term
@@ -121,14 +117,12 @@ CREATE TABLE `scholarship_term` (
   `endtime` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   `enabled` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of scholarship_term
 -- ----------------------------
-INSERT INTO `scholarship_term` VALUES ('1', '2016-2017学年第一学期', '2016-08-01 02:02:03', '2016-08-03 03:23:12', '1');
-INSERT INTO `scholarship_term` VALUES ('2', '1231231', '2016-07-31 02:02:29', '2016-08-02 02:02:37', '1');
-INSERT INTO `scholarship_term` VALUES ('3', 'rerawsda', '2016-08-01 02:02:56', '2016-08-11 02:06:48', '1');
+INSERT INTO `scholarship_term` VALUES ('19', '2016年上半学期', '2016-08-27 00:00:00', '2017-02-18 00:00:00', '1');
 
 -- ----------------------------
 -- Table structure for school
@@ -140,13 +134,12 @@ CREATE TABLE `school` (
   `telephone` varchar(12) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of school
 -- ----------------------------
-INSERT INTO `school` VALUES ('1', '计算机学院', '1234567', '呵呵哒');
-INSERT INTO `school` VALUES ('2', '经济管理学院', '122342134', '经管辣鸡');
+INSERT INTO `school` VALUES ('11', '计算机学院', '18814182439', 'IT');
 
 -- ----------------------------
 -- Table structure for student
@@ -172,9 +165,7 @@ CREATE TABLE `student` (
 -- ----------------------------
 -- Records of student
 -- ----------------------------
-INSERT INTO `student` VALUES ('3113000001', '张三', '123456123456000001', '男', '1994-01-01', '备注1', '130802', '计算机科学与技术', '计算机学院', '-1');
-INSERT INTO `student` VALUES ('3113000002', '李四', '123456123456000002', '男', '1994-01-01', '备注2', '130802', '计算机科学与技术', '计算机学院', '-1');
-INSERT INTO `student` VALUES ('3113000003', '张三', '123456123456000003', '男', '1994-01-01', '备注3', '130802', '计算机科学与技术', '计算机学院', '-1');
+INSERT INTO `student` VALUES ('3113002410', '许光杰', '442000199310222034', '男', '2016-08-18', '', '130803', '软件工程', '计算机学院', '1');
 
 -- ----------------------------
 -- Table structure for teacher
@@ -194,12 +185,12 @@ CREATE TABLE `teacher` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   KEY `schoolid` (`schoolid`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of teacher
 -- ----------------------------
-INSERT INTO `teacher` VALUES ('1', 'test1', 'b605e86d02eef8bfd0646f6a704c17c9', '1234', 'testo', 'testd', '1', '1470161058', '127.0.0.1', '0000-00-00 00:00:00');
+INSERT INTO `teacher` VALUES ('6', 'Ain', 'a66e6a2e7657197b90d4211abb84cb57', '15117', '许光杰', '123456', '11', '0', '', '2016-08-27 01:36:23');
 
 -- ----------------------------
 -- View structure for v_scholarship_gainer_level

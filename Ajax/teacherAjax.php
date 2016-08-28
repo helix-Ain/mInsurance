@@ -26,7 +26,6 @@ else if ($action == 'modify')
     modifyTeacher($_REQUEST);
 else
     echo 'fuck you bitch';
-
 function getTeacherList($params)
 {
     $teacherDal = new TeacherDAL();
@@ -54,7 +53,6 @@ function getTeacherList($params)
     }
     echo json_encode($response);
 }
-
 function deleTeacher($params)
 {
     $teacherDal = new TeacherDAL();
@@ -79,7 +77,6 @@ function deleTeacher($params)
         );
     echo json_encode($response);
 }
-
 function addTeacher($params)
 {
     $teacherDal = new TeacherDAL();
@@ -103,7 +100,6 @@ function addTeacher($params)
     }
     echo json_encode($response);
 }
-
 function modifyTeacher($params)
 {
     $teacherDal = new teacherDAL();

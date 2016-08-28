@@ -23,7 +23,7 @@ if(!$role['admin']) {
                         </div>
                         <div class="form-group">
                             <label for="level-money">奖学金金额:</label>
-                            <input type="date" class="form-control" id="level-money" />
+                            <input type="text" class="form-control" id="level-money" />
                         </div>
                         <div class="=form-group">
                             <label for="level-note">备注:</label>
@@ -59,7 +59,7 @@ if(!$role['admin']) {
                         </div>
                         <div class="form-group">
                             <label for="modify-level-starttime">奖学金金额:</label>
-                            <input type="date" class="form-control" id="modify-level-money" />
+                            <input type="text" class="form-control" id="modify-level-money" />
                         </div>
                         <div class="=form-group">
                             <label for="modify-level-note">备注:</label>
@@ -133,7 +133,7 @@ if(!$role['admin']) {
                 if (result.code == 0) {
                     $.each(result.data, function (i, item) {
                         var day = new Date(item.logintime * 1000);
-                        $('#listview tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.levelname + '</td><td>'+item.money+'</td><td>'+ isNull(item.note)+'</td><td><a class="btn btn-info btn-xs" onclick="modifylevel('+item.id+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-xs" onclick="delelevel('+item.id+')">删除</a></td></tr>');
+                        $('#listview tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.levelname + '</td><td>'+item.money+'</td><td>'+ isNull(item.note)+'</td><td><a class="btn btn-info btn-sm" onclick="modifylevel('+item.id+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-sm" onclick="delelevel('+item.id+')">删除</a></td></tr>');
                     });
                 }
                 else {
@@ -192,8 +192,9 @@ if(!$role['admin']) {
                 delelevel(ids);
         });
         $('#modify-level-submit').click(function () {
+            if (confirm('确认修改奖学金,该操作将影响奖学金下所有的授奖信息?'))
             $.ajax({
-                url: '/Ajax/scholarshiplevel.php',
+                url: '/Ajax/scholarshiplevelAjax.php',
                 type: 'post',
                 data: { action:'modify',id:$('#modify-level-id').val(),levelname: $('#modify-level-levelname').val(), money: $('#modify-level-money').val(), note: $('#modify-level-note').val()},
                 dataType: 'json',
@@ -220,7 +221,7 @@ if(!$role['admin']) {
             if (!(id instanceof Array)) {
                 id = [id];
             }
-            if (confirm('确认删除?')) {
+            if (confirm('确认删除奖学金,该操作将删除奖学金下所有的授奖信息?')) {
                 $.ajax({
                     url: '/Ajax/scholarshiplevelAjax.php',
                     data: { action: 'dele', id: id },

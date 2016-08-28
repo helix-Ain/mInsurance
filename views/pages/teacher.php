@@ -148,7 +148,7 @@ if(!$role['admin']) {
                 if (result.code == 0) {
                     $.each(result.data, function (i, item) {
                         var day = new Date(item.logintime * 1000);
-                        $('#listview  tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.username + '</td><td>'+item.operator+'</td><td data-tag='+item.schoolid+'>' + item.school + '</td><td>' + item.description + '</td><td>' + day.toLocaleString() + '</td><td>'+item.loginip+'</td><td><a class="btn btn-info btn-xs" onclick="modifyTeacher('+item.id+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-xs" onclick="deleTeacher('+item.id+')">删除</a></td></tr>');
+                        $('#listview  tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.username + '</td><td>'+item.operator+'</td><td data-tag='+item.schoolid+'>' + item.school + '</td><td>' + item.description + '</td><td>' + day.toLocaleString() + '</td><td>'+item.loginip+'</td><td><a class="btn btn-info btn-sm" onclick="modifyTeacher('+item.id+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-sm" onclick="deleTeacher('+item.id+')">删除</a></td></tr>');
                     });
                 }
                 else {
@@ -254,7 +254,7 @@ if(!$role['admin']) {
             if (!(id instanceof Array)) {
                 id = [id];
             }
-            if (confirm('确认删除?')) {
+            if (confirm('确认删除教师?')) {
                 $.ajax({
                     url: '/Ajax/teacherAjax.php',
                     data: { action: 'dele', id: id },

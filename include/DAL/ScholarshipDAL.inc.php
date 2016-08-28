@@ -91,11 +91,10 @@ class ScholarshipDAL
         $levelid = NULL;
         $result = false;
         extract($condition);
-        $sql_check = "SELECT * FROM `scholarship_gainer` WHERE `stuid`=$stuid AND `termid` = $termid";
+        $sql_check = "SELECT * FROM `scholarship_gainer` WHERE `stuid`=$stuid AND `termid` = $termid AND `leveid`=$levelid";
         $sqlp_check = $this->db->prepare($sql_check);
         $sqlp_check->execute();
         $result = $sqlp_check->fetchAll();
-        var_dump($result);
         if ($result) {
             $sql_set = "UPDATE `scholarship_gainer` SET `levelid`=$levelid WHERE `stuid`='$stuid' AND `termid`=$termid";
             $sqlp_set = $this->db->prepare($sql_set);
@@ -106,6 +105,44 @@ class ScholarshipDAL
             $result = $sqlp_set->execute();
         }
         return $result;
+    }
+
+    public function UpdateGainerById($information = array('stuid'=>NULL,'termid'=>NULL,'levelid'=>NULL),$id){
+        $stuid = NULL;
+        $termid = NULL;
+        $levelid = NULL;
+        extract($information);
+        $sql = "SELECT `id` FROM `scholarship_gainer` WHERE `id`=$id";
+        $sqlp = $this->db->prepare($sql);
+        $sqlp->execute();
+        $result = $sqlp->fetch();
+        if($result){
+            $sql = "UPDATE `scholarship_gainer` set `stuid`=$stuid,`termid`=$termid,`levelid`=$levelid WHERE `id`=$id";
+            $sqlp = $this->db->prepare($sql);
+            $sqlp->execute();
+            $result = $sqlp->rowCount();
+            $sqlp->closeCursor();
+            return $result;
+        }else{
+            return false;
+        }
+    }
+
+    public function UpdateGainerStuid($oldstuid,$stuid){
+        $sql = "SELECT `id` FROM `scholarship_gainer` WHERE `stuid`=$oldstuid";
+        $sqlp = $this->db->prepare($sql);
+        $sqlp->execute();
+        $result = $sqlp->fetch();
+        if($result){
+            $sql = "UPDATE `scholarship_gainer` set `stuid`=$stuid WHERE `stuid`=$oldstuid";
+            $sqlp = $this->db->prepare($sql);
+            $sqlp->execute();
+            $result = $sqlp->rowCount();
+            $sqlp->closeCursor();
+            return $result;
+        }else{
+            return false;
+        }
     }
 
     public function UnsetGainer($condition = array('id' => NULL, 'stuid' => NULL, 'termid' => NULL,'levelid'=>NULL))
@@ -119,7 +156,7 @@ class ScholarshipDAL
         foreach ($condition as $key => $value)
             if ($condition[$key] != NULL)
                 $sql .= "AND `$key`='$value' ";
-        if ($id || !($stuid xor $termid)) {
+        if ($id || $stuid || $termid || $levelid || !($stuid xor $termid)) {
             $sqlp = $this->db->prepare($sql);
             $result = $sqlp->execute();
         }

@@ -18,15 +18,15 @@ if (!Auth::TeacherCheck() && !Auth::AdminCheck()) {
 }
 $action = $_REQUEST['action'];
 if ($action == 'getlist') {
-    getScholarshipGainerList($params)List($_REQUEST);
+    getScholarshipGainerList($_REQUEST);
 } else if ($action == 'set') {
-    setScholarshipGainer($params)($_REQUEST);
+    setScholarshipGainer($_REQUEST);
 } else if ($action == 'dele') {
-    deleScholarshipGainer($params)($_REQUEST);
+    deleScholarshipGainer($_REQUEST);
 } else if ($action == 'modify') {
-    modifyStudentGainer($_REQUEST);
+    modifyScholarshipGainer($_REQUEST);
 } else if ($action == 'export') {
-    exportStudentGainer($_REQUEST);
+    exportScholarshipGainer($_REQUEST);
 } else {
     echo 'fuck you bitch';
 }
@@ -42,6 +42,9 @@ function getScholarshipGainerList($params)
     $info['levelid'] = isset($params['levelid']) ? $params['levelid'] : NULL;
     $result = $scholarshipDal->GetScholarshipList($info);
     if ($result) {
+        foreach($result as &$item){
+            $item['term'] = $scholarshipDal->GetTermOne(['id'=>$item['termid']])['title'];
+        }
         $response = array(
             'code' => 0,
             'data' => $result,
@@ -61,15 +64,14 @@ function setScholarshipGainer($params)
 {
     $studentDal = new StudentDAL();
     $scholarshipDal = new ScholarshipDAL();
-    $result = NULL;
+    $result = false;
     $info['stuid'] = isset($params['stuid']) ? $params['stuid'] : NULL;
     $info['levelid'] = isset($params['levelid']) ? $params['levelid'] : NULL;
     $info['termid'] = isset($params['termid']) ? $params['termid'] : NULL;
-
     $student = $studentDal->GetStudentOne(array('stuid' => $info['stuid'], 'name' => NULL, 'identification' => NULL));
-    if ($student)
+    if ($student){
         $result = $scholarshipDal->SetGainer($info);
-
+    }
     if ($result) {
         $response = array(
             'code' => 0,
@@ -94,7 +96,7 @@ function deleScholarshipGainer($params)
         $info['stuid'] = explode(',',$params['stuid']);
     }
     $flag = true;
-    foreach ($info['id'] as $id) {
+    foreach ($info['stuid'] as $id) {
         $flag = $flag && $scholarshipDal->UnsetGainer(['stuid' => $id]);
     }
     if ($flag) {
@@ -113,17 +115,11 @@ function deleScholarshipGainer($params)
 
 function modifyScholarshipGainer($params)
 {
-    $studentDal = new StudentDAL();
+    $scholarshipDal = new ScholarshipDAL();
     $info['stuid'] = isset($params['stuid']) ? $params['stuid'] : NULL;
-    $info['identification'] = isset($params['identification']) ? $params['identification'] : NULL;
-    $info['sex'] = isset($params['sex']) ? $params['sex'] : NULL;
-    $info['birthday'] = isset($params['birthday']) ? $params['birthday'] : NULL;
-    $info['school'] = isset($params['school']) ? $params['school'] : NULL;
-    $info['major'] = isset($params['major']) ? $params['major'] : NULL;
-    $info['classid'] = isset($params['classid']) ? $params['classid'] : NULL;
-    $info['insured'] = isset($params['insured']) ? $params['insured'] : NULL;
-    $info['note'] = isset($params['note']) ? $params['note'] : NULL;
-    $result = $studentDal->UpdateStudent(array('stuid' => $params['id']), $info);
+    $info['levelid'] = isset($params['levelid'])?$params['levelid']:NULL;
+    $info['termid'] = isset($params['termid'])?$params['termid']:NULL;
+    $result = $scholarshipDal->UpdateGainerById($info,$params['id']);
     if ($result) {
         $response = array(
             'code' => 0,
@@ -141,13 +137,24 @@ function modifyScholarshipGainer($params)
 function exportScholarshipGainer($params)
 {
     $info['school'] = isset($params['school']) && $params['school'] != '' ? $params['school'] : NULL;
-    $info['major'] = isset($params['major']) && $params['major'] != '' ? $params['major'] : NULL;
-    $info['classid'] = isset($params['classid']) && $params['classid'] != '' ? $params['classid'] : NULL;
-    $info['levelname'] = isset($params['levelname']) && $params['levelname']!=''?$params['levelname']:NULL;
+    $info['major'] = isset($params['major']) && $params['major'] != ''&&$params['major']!='null' ? $params['major'] : NULL;
+    $info['classid'] = isset($params['classid']) && $params['classid'] != ''&&$params['classid']!='null' ? $params['classid'] : NULL;
     $info['levelid'] = isset($params['levelid'])&&$params['levelid']!=''?$params['levelid']:NULL;
     $info['termid'] = isset($params['termid'])&&$params['termid']!=''?$params['termid']:NULL;
-    $info['insured'] = isset($params['insured']) && $params['insured'] != '' ? $params['insured'] : NULL;
-    $result = Yibao::exportExcel($info);
+    if($info['school']!=NULL){
+        $schoolDal = new SchoolDAL();
+        $info['school'] = $schoolDal->GetSchoolOne(['id'=>$info['school']])['name'];
+        if($info['major']!=NULL){
+            $majorDal = new MajorDAL();
+            $info['major'] = $majorDal->GetMajorOne(['id'=>$info['major']])['name'];
+        }
+    }
+    if(!is_array($params['fields'])){
+		$fields = explode(',',$params['fields']);
+	}else{
+		$fields = $params['fields'];
+	}
+    $result = Yibao::exportExcelByField($info,$fields,true);
     if ($result) {
         $response = array(
             'code' => 0,

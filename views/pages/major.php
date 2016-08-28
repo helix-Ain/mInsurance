@@ -124,7 +124,7 @@ if(!($role['admin']|| $role['teacher'])) {
             success: function (result) {
                 if (result.code == 0) {
                     $.each(result.data, function (i, item) {
-                        $('#listview tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="'+item.id+'"/></td><td>'+item.name+'</td><td data-tag='+item.schoolid+'>'+item.school+'</td><td><a class="btn btn-info btn-xs" onclick="modifyMajor('+item.id+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-xs" onclick="deleMajor('+item.id+')">删除</a></td></tr>');
+                        $('#listview tbody').append('<tr id='+item.id+'><td class="tc"><input type="checkbox" name="'+item.id+'"/></td><td>'+item.name+'</td><td data-tag='+item.schoolid+'>'+item.school+'</td><td><a class="btn btn-info btn-sm" onclick="modifyMajor('+item.id+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-sm" onclick="deleMajor('+item.id+')">删除</a></td></tr>');
                     });
                 }
                 else {
@@ -200,6 +200,7 @@ if(!($role['admin']|| $role['teacher'])) {
             deleMajor(ids);
         });
         $('#modify-major-submit').click(function () {
+            if (confirm('确认修改专业,该操作将影响专业下所有班级和学生信息?'))
             $.ajax({
                 url: '/Ajax/majorAjax.php',
                 type: 'post',
@@ -229,7 +230,7 @@ if(!($role['admin']|| $role['teacher'])) {
         if (!(id instanceof Array)) {
             id = [id];
         }
-        if (confirm('确认删除?')) {
+        if (confirm('确认删除专业,该操作将删除专业下所有的班级和学生信息?')) {
             $.ajax({
                 url: '/Ajax/majorAjax.php',
                 data: { action: 'dele', id: id },

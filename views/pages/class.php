@@ -52,6 +52,7 @@ if(!($role['admin'] || $role['teacher'])) {
             <div class="modal-body">
                 <div>
                     <form>
+                        <input type="hidden" id="modify-class-oldname" />
                         <div class="form-group">
                             <label for="modify-class-name">班级名称:</label>
                             <input type="text" class="form-control" id="modify-class-name" />
@@ -131,7 +132,7 @@ if(!($role['admin'] || $role['teacher'])) {
             success: function (result) {
                 if (result.code == 0) {
                     $.each(result.data, function (i, item) {
-                        $('#listview  tbody').append('<tr id='+item.classid+'><td class="tc"><input type="checkbox" name="'+item.classid+'"/></td><td>'+item.classid+'</td><td data-tag='+item.majorid+'>'+item.major+'</td><td data-tag='+item.schoolid+'>'+item.school+'</td><td><a class="btn btn-info btn-xs" onclick="modifyClass('+item.classid+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-xs" onclick="deleClass('+item.classid+')">删除</a></td></tr>');
+                        $('#listview  tbody').append('<tr id='+item.classid+'><td class="tc"><input type="checkbox" name="'+item.classid+'"/></td><td>'+item.classid+'</td><td data-tag='+item.majorid+'>'+item.major+'</td><td data-tag='+item.schoolid+'>'+item.school+'</td><td><a class="btn btn-info btn-sm" onclick="modifyClass('+item.classid+')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-sm" onclick="deleClass('+item.classid+')">删除</a></td></tr>');
                     });
                 }
                 else {
@@ -162,7 +163,7 @@ if(!($role['admin'] || $role['teacher'])) {
             dataType: 'json',
             success: function (result) {
                 if (result.code == 0) {
-                    $('#class-school,#modify-class-school').append('<option value="">请选择学院</option>');
+                    $('#class-school,#modify-class-school').append('<option value="">请选择</option>');
                     $.each(result.data, function (i, item) {
                         $('#class-school,#modify-class-school').append('<option value='+item.id+'>'+item.name+'</option>');
                     });
@@ -189,14 +190,14 @@ if(!($role['admin'] || $role['teacher'])) {
                         if (result.code == 0) {
                             if (action == 'add') {
                                 $('#class-major').empty();
-                                $('#class-major').append('<option value="">请选择专业</option>');
+                                $('#class-major').append('<option value="">请选择</option>');
                                 $.each(result.data, function (i, item) {
                                     $('#class-major').append('<option value=' + item.id + '>' + item.name + '</option>');
                                 })
                             }
                             else if (action == 'modify') {
                                 $('#modify-class-major').empty();
-                                $('#modify-class-major').append('<option value="">请选择专业</option>');
+                                $('#modify-class-major').append('<option value="">请选择</option>');
                                 $.each(result.data, function (i, item) {
                                     $('#modify-class-major').append('<option value=' + item.id + '>' + item.name + '</option>');
                                 });
@@ -257,25 +258,28 @@ if(!($role['admin'] || $role['teacher'])) {
             deleClass(ids);
         });
         $('#modify-class-submit').click(function () {
-            $.ajax({
-                url: '/Ajax/classAjax.php',
-                type: 'post',
-                data: { action: 'modify', classid: $('#modify-class-name').val(), schoolid: $('#modify-class-school').val(), majorid: $('#modify-class-major').val() },
-                dataType: 'json',
-                success: function (result) {
-                    if (result.code == 0) {
-                        location.reload();
+            if (confirm('确认修改班级,该操作将影响班级下所有的学生信息?')) {
+                $.ajax({
+                    url: '/Ajax/classAjax.php',
+                    type: 'post',
+                    data: { action: 'modify',oldclassid:$('#modify-class-oldname'), classid: $('#modify-class-name').val(), schoolid: $('#modify-class-school').val(), majorid: $('#modify-class-major').val() },
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.code == 0) {
+                            location.reload();
+                        }
+                        else {
+                            window.console.log(result.code + ':' + result.desc);
+                        }
                     }
-                    else {
-                        window.console.log(result.code+':'+result.desc);
-                    }
-                }
-            });
+                });
+            }
         });
     });
     function modifyClass(id) {
         var $tr = $('#' + id);
-        $('#modify-class-name').val($tr.find('td:eq(1)').html());
+        $('#modify-class-oldname').val(id);
+        $('#modify-class-name').val(id);
         $('#modify-class-school').val($tr.find('td:eq(3)').data('tag'));
         $.ajax({
             url: '/Ajax/majorAjax.php',
@@ -300,7 +304,7 @@ if(!($role['admin'] || $role['teacher'])) {
         if (!(id instanceof Array)) {
             id = [id];
         }
-        if (confirm('确认删除?')) {
+        if (confirm('确认删除班级,该操作将删除该班级下所有的学生信息?')) {
             $.ajax({
                 url: '/Ajax/classAjax.php',
                 type: 'post',

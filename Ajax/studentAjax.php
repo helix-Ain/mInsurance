@@ -143,6 +143,10 @@ function deleStudent($params)
 function modifyStudent($params)
 {
     $studentDal = new StudentDAL();
+    $scholarshipDal = new ScholarshipDAL();
+    $oldstuid = $params['oldstuid'];
+    $info['stuid'] = isset($params['stuid'])?$params['stuid']:NULL;
+    $info['name'] = isset($params['name'])?$params['name']:NULL;
     $info['identification'] = isset($params['identification']) ? $params['identification'] : NULL;
     $info['sex'] = isset($params['sex']) ? $params['sex'] : NULL;
     $info['birthday'] = isset($params['birthday']) ? $params['birthday'] : NULL;
@@ -151,8 +155,9 @@ function modifyStudent($params)
     $info['classid'] = isset($params['classid']) ? $params['classid'] : NULL;
     $info['insured'] = isset($params['insured']) ? $params['insured'] : NULL;
     $info['note'] = isset($params['note']) ? $params['note'] : NULL;
-    $result = $studentDal->UpdateStudent(array('stuid' => $params['stuid']), $info);
+    $result = $studentDal->UpdateStudent(array('stuid' => $oldstuid), $info);
     if ($result) {
+        $scholarshipDal->UpdateGainerStuid($oldstuid,$info['stuid']);
         $response = array(
             'code' => 0,
             'desc' => '操作成功'
@@ -168,9 +173,21 @@ function modifyStudent($params)
 
 function exportStudent($params)
 {
-    $info['school'] = isset($params['school']) && $params['school'] != '' ? $params['school'] : NULL;
-    $info['major'] = isset($params['major']) && $params['major'] != '' ? $params['major'] : NULL;
-    $info['classid'] = isset($params['classid']) && $params['classid'] != '' ? $params['classid'] : NULL;
+    $schoolDal = new SchoolDAL();
+    $majorDal = new MajorDAL();
+    $info['schoolid'] = isset($params['school']) && $params['school'] != '' ? $params['school'] : NULL;
+    $info['majorid'] = isset($params['major']) && $params['major'] != ''&&$params['major']!='null' ? $params['major'] : NULL;
+    if($info['schoolid']!=''){
+        $info['school'] = $schoolDal->GetSchoolOne(['id'=>$info['schoolid']])['name'];
+        if($info['majorid']!=''){
+            $info['major'] = $majorDal->GetMajorOne(['id'=>$info['majorid']])['name'];
+        }
+    }
+    unset($info['schoolid'],$info['majorid']);
+    if(Auth::TeacherCheck()){
+        $info['school']=  $schoolDal->GetSchoolOne(['id'=>$_SESSION['teacher_schoolid']]);
+    }
+    $info['classid'] = isset($params['classid']) && $params['classid'] != '' && $params['classid']!='null' ? $params['classid'] : NULL;
     $info['insured'] = isset($params['insured']) && $params['insured'] != '' ? $params['insured'] : NULL;
 	if(!is_array($params['fields'])){
 		$fields = explode(',',$params['fields']);
@@ -178,12 +195,11 @@ function exportStudent($params)
 		$fields = $params['fields'];
 	}
     $result = Yibao::exportExcelByField($info,$fields);
-    if ($result) {
+    if($result) {
         $response = array(
             'code' => 0,
             'desc' => '操作成功'
         );
-
     } else {
         $response = array(
             'code' => 1,
@@ -232,7 +248,7 @@ function preimportStudent($rarams)
                 'code' => 0,
                 'succeeddata' => $data['succeeddata'],
                 'faileddata' => $data['faileddata'],
-                'desc' => '成功解析' . count($data['succeeddata']) . '个学生，失败' . count($data['faileddata']) . '个学生'
+                'desc' => '成功解析' . count($data['succeeddata']) . '个学生,失败' . count($data['faileddata']) . '个学生'
             );
         } else {
             $response = array(

@@ -5,7 +5,6 @@ if( !($role['admin']||$role['teacher'])) {
     exit;
 }
 ?>
-<input type="hidden" id="current-id" />
 <div class="modal fade" id="modify-student-mod" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -18,6 +17,7 @@ if( !($role['admin']||$role['teacher'])) {
             <div class="modal-body">
                 <div>
                     <form>
+                        <input type="hidden" id="modify-student-oldstuid" />
                         <div class="form-group">
                             <label for="modify-student-stuid">学号:</label>
                             <input type="text" class="form-control" id="modify-student-stuid" />
@@ -118,7 +118,7 @@ if( !($role['admin']||$role['teacher'])) {
                                 <input type="checkbox" class="export-field" value="major" checked />专业
                             </label>
                             <label class="checkbox-inline">
-                                <input type="checkbox" class="export-field" value="class" checked />班级
+                                <input type="checkbox" class="export-field" value="classid" checked />班级
                             </label>
                             <label class="checkbox-inline">
                                 <input type="checkbox" class="export-field" value="stuid" checked />学号
@@ -251,10 +251,11 @@ if( !($role['admin']||$role['teacher'])) {
             deleStudent(ids);
         });
         $('#modify-student-submit').click(function () {
+            if (confirm('确认修改学生,该操作将影响学生下所有的奖学金信息?'))
             $.ajax({
                 url: '/Ajax/studentAjax.php',
                 type: 'post',
-                data: { action: 'modify',id:$('#current-id').val(), stuid: $('#modify-student-stuid').val(), name: $('#modify-student-name').val(), identification: $('#modify-student-identification').val(), sex: $('input[name="modify-student-sex"]:checked').val(), birthday: $('#modify-student-birthday').val(), school: $('#modify-student-school').val(), major: $('#modify-student-major').val(), class: $('#modify-student-class').val(), note: $('#modify-student-note').val() },
+                data: { action: 'modify',oldstuid:$('#modify-student-oldstuid').val(), stuid: $('#modify-student-stuid').val(), name: $('#modify-student-name').val(), identification: $('#modify-student-identification').val(), sex: $('input[name="modify-student-sex"]:checked').val(), birthday: $('#modify-student-birthday').val(), school: $('#modify-student-school').val(), major: $('#modify-student-major').val(), class: $('#modify-student-class').val(), note: $('#modify-student-note').val() },
                 dataType: 'json',
                 success: function (result) {
                     if (result.code == 0) {
@@ -356,14 +357,15 @@ if( !($role['admin']||$role['teacher'])) {
             $.each($('.export-field:checked'), function (i, item) {
                 fields.push($(this).val());
             });
-            var school = $("#export-school").find("option:selected").text()!='请选择'?$("#export-school").find("option:selected").text():'';
-            var major = $("#export-major").find("option:selected").text()!='请选择'?$("#export-major").find("option:selected").text():'';
-            var class_ = $("#export-classid").find("option:selected").text() != '请选择' ? $("#export-classid").find("option:selected").text() : '';
-            location.href = '/Ajax/studentAjax.php?action=export&school='+school+'&major='+major+'&classid='+class_+'&fields='+fields;
+            var school = $("#export-school").val();
+            var major = $("#export-major").val();
+            var class_ = $("#export-classid").val();
+            var insured = $('#export-insured').val();
+            location.href = '/Ajax/studentAjax.php?action=export&school='+school+'&major='+major+'&classid='+class_+'&insured='+insured+'&fields='+fields;
         });
     });
     function modifyStudent(stuid) {
-        $('#current-id').val(stuid);
+        $('#modify-student-oldstuid').val(stuid);
         $('#modify-student-major,#modify-student-classid').empty();
         var $tr = $('#' + stuid);
         var school = $tr.find('td:eq(8)').html();
@@ -427,7 +429,7 @@ if( !($role['admin']||$role['teacher'])) {
         if (!(id instanceof Array)) {
             id = [id];
         }
-        if (confirm('确认删除这些项吗?')) {
+        if (confirm('确认删除学生,该操作将删除学生下所有的获奖信息?')) {
             $.ajax({
                 url: '/Ajax/studentAjax.php',
                 type: 'post',

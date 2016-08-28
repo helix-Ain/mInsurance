@@ -115,20 +115,29 @@ function addClass($params)
 
 function modifyClass($params)
 {
-    $classDAL = new ClassDAL();
+    $classDal   = new ClassDAL();
+    $studentDal = new StudentDAL();
+    $schoolDal = new SchoolDAL();
+    $majorDal   = new MajorDAL();
+    $oldclassid = $params['oldclassid'];
     $info['classid'] = isset($params['classid']) ? $params['classid'] : NULL;
     $info['schoolid'] = isset($params['schoolid']) ? $params['schoolid'] : NULL;
     $info['majorid'] = isset($params['majorid']) ? $params['majorid'] : NULL;
-    $result = $classDAL->UpdateClass(array('classid' => $params['classid']), $info);
-    if ($result)
+    $schoolname = $schoolDal->GetSchoolOne(['id'=>$info['schoolid']])['name'];
+    $majorname  = $majorDal->GetMajorOne(['id'=>$info['majorid']])['name'];
+    $result = $classDal->UpdateClass(array('oldclassid' => $oldclassid), $info);
+    if ($result){
+        $studentDal->UpdateStudent(['classid'=>$oldclassid],['classid'=>$info['classid'],'school'=>$schoolname,'major'=>$majorname]);
         $response = array(
             'code' => 0,
             'desc' => '操作成功'
         );
-    else
+    }
+    else{
         $response = array(
             'code' => 1,
             'desc' => '操作失败'
         );
+    }
     echo json_encode($response);
 }

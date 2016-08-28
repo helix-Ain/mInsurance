@@ -4,7 +4,7 @@ if(!($role['admin'] || $role['teacher'])) {
     echo 'Access Denied';
     exit;
 }
-    ?>
+?>
 <div class="main-wrap">
     <div style="margin-top:1px;">
         <div class="crumb-wrap">
@@ -38,15 +38,21 @@ if(!($role['admin'] || $role['teacher'])) {
                 <ul class="sys-info-list">
                     <li>
                         <label class="res-lab">操作系统</label>
-                        <span class="res-info"><?php echo php_uname('s');?></span>
+                        <span class="res-info">
+                            <?php echo php_uname('s');?>
+                        </span>
                     </li>
                     <li>
                         <label class="res-lab">运行环境</label>
-                        <span class="res-info"><?php echo 'PHP '.PHP_VERSION;?></span>
+                        <span class="res-info">
+                            <?php echo 'PHP '.PHP_VERSION;?>
+                        </span>
                     </li>
                     <li>
                         <label class="res-lab">PHP运行方式</label>
-                        <span class="res-info"><?php echo php_sapi_name();?></span>
+                        <span class="res-info">
+                            <?php echo php_sapi_name();?>
+                        </span>
                     </li>
                     <li>
                         <label class="res-lab">版本</label>
@@ -54,19 +60,27 @@ if(!($role['admin'] || $role['teacher'])) {
                     </li>
                     <li>
                         <label class="res-lab">上传附件限制</label>
-                        <span class="res-info"><?php echo ini_get('upload_max_filesize');?></span>
+                        <span class="res-info">
+                            <?php echo ini_get('upload_max_filesize');?>
+                        </span>
                     </li>
                     <li>
                         <label class="res-lab">北京时间</label>
-                        <span class="res-info"><?php echo date('Y年m月d日 H:i:s');?></span>
+                        <span class="res-info">
+                            <?php echo date('Y年m月d日 H:i:s');?>
+                        </span>
                     </li>
                     <li>
                         <label class="res-lab">服务器域名/IP</label>
-                        <span class="res-info"><?php echo $_SERVER['SERVER_NAME'].'/'.GetHostByName($_SERVER['SERVER_NAME']);?></span>
+                        <span class="res-info">
+                            <?php echo $_SERVER['SERVER_NAME'].'/'.GetHostByName($_SERVER['SERVER_NAME']);?>
+                        </span>
                     </li>
                     <li>
                         <label class="res-lab">Host</label>
-                        <span class="res-info"><?php echo $_SERVER["REMOTE_ADDR"];?></span>
+                        <span class="res-info">
+                            <?php echo $_SERVER["REMOTE_ADDR"];?>
+                        </span>
                     </li>
                 </ul>
             </div>
@@ -86,7 +100,12 @@ if(!($role['admin'] || $role['teacher'])) {
                     <li>
                         <label class="res-lab">邮箱</label>
                         <span class="res-info">
-                            <a class="qq-link">1124485179@qq.com&nbsp;&nbsp;&nbsp;&nbsp;kuangjy@qq.com</a>
+                            <a target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=SHl5enx8cH15f3EIOTlmKycl">1124485179@qq.com</a>
+                            <a target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=SHl5enx8cH15f3EIOTlmKycl" style="text-decoration:none;">
+                                <img src="http://rescdn.qqmail.com/zh_CN/htmledition/images/function/qm_open/ico_mailme_11.png" />
+                            </a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a>kuangjy@qq.com</a>
                         </span>
                     </li>
                 </ul>

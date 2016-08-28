@@ -68,7 +68,7 @@ if (!$role['admin']) {
 						</div>
 						<div class="=form-group">
 							<label for="modify-gainer-termid">学期:</label>
-							<input type="text" class="form-control" id="modify-gainer-termid" />
+							<select class="form-control" id="modify-gainer-termid"></select>
 						</div>
 						<br />
 						<button id="modify-gainer-submit" type="button" class="btn btn-default">
@@ -107,8 +107,8 @@ if (!$role['admin']) {
 							<select class="form-control" id="export-major"></select>
 						</div>
 						<div class="form-group">
-							<label for="export-class">班级:</label>
-							<select class="form-control" id="export-class"></select>
+							<label for="export-classid">班级:</label>
+							<select class="form-control" id="export-classid"></select>
 						</div>
 						<div class="form-group">
 							<label for='export-levelid'>奖学金名称:</label>
@@ -121,6 +121,15 @@ if (!$role['admin']) {
 						<div class="form-group">
 							<label for="export-field">字段:</label>
 							<br/>
+                            <label class="checkbox-inline">
+                            <input type="checkbox" class="export-field" value="levelname" checked />
+                            奖学金</label>
+                            <label class="checkbox-inline">
+                            <input type="checkbox" class="export-field" value="money" checked />
+                            金额</label>
+                            <label class="checkbox-inline">
+                            <input  type="checkbox" class="export-field" value="term" checked />
+                             学期</label>
 							<label class="checkbox-inline">
 							<input type="checkbox" class="export-field" value="school" checked/>
 							学院 </label>
@@ -128,15 +137,16 @@ if (!$role['admin']) {
 							<input type="checkbox" class="export-field" value="major" checked />
 							专业 </label>
 							<label class="checkbox-inline">
-							<input type="checkbox" class="export-field" value="class" checked/>
+							<input type="checkbox" class="export-field" value="classid" checked/>
 							班级 </label>
 							<label class="checkbox-inline">
 							<input type="checkbox" class="export-field" value="stuid" checked/>
 							学号 </label>
 							<label class="checkbox-inline">
 							<input type="checkbox" class="export-field" value="name" checked/>
-							姓名 </label>
-							<label class="checkbox-inline">
+                                姓名
+                            </label><br />
+                            <label class="checkbox-inline">
 							<input type="checkbox" class="export-field" value="identification" checked/>
 							身份证号码 </label>
 							<label class="checkbox-inline">
@@ -188,7 +198,7 @@ if (!$role['admin']) {
 						<span class="glyphicon glyphicon-plus"></span>
 						添加获奖人
 					</a>
-					<a href="#" data-toggle="modal" dagta-target="#export-mod">
+					<a href="#" data-toggle="modal" data-target="#export-mod">
 						<span class='glyphicon glyphicon-file'></span>
 						导出表格
 					</a>
@@ -208,7 +218,7 @@ if (!$role['admin']) {
 							<th>专业</th>
 							<th>学院</th>
 							<th>奖学金</th>
-							<th>金额</th>
+					        <th>学期</th>
 							<th style="width:12%;">操作</th>
 						</tr>
 					</thead>
@@ -229,11 +239,12 @@ if (!$role['admin']) {
 			action: 'getlist'
 		},
 		dataType: 'json',
-		success: function(result) {
-			if(result.code == 0) {
+		success: function (result) {
+		    window.console.log(result);
+		    if (result.code == 0) {
 				$.each(result.data, function(i, item) {
 					var day = new Date(item.logintime * 1000);
-					$('#listview tbody').append('<tr id=' + item.id + '><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.stuid + '</td><td>' + item.name + '</td><td>' + item.sex + '</td><td>' + item.classid + '</td><td>' + item.major + '</td><td>' + item.school + '</td><td>' + item.levelname + '</td><td>' + item.money + '</td><td><a class="btn btn-info btn-xs" onclick="modifygainer(' + item.id + ')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-xs" onclick="delegainer(' + item.id + ')">删除</a></td></tr>');
+					$('#listview tbody').append('<tr id=' + item.id + '><td class="tc"><input type="checkbox" name="' + item.id + '"/></td><td>' + item.stuid + '</td><td>' + item.name + '</td><td>' + item.sex + '</td><td>' + item.classid + '</td><td>' + item.major + '</td><td>' + item.school + '</td><td data-levelid='+item.levelid+'>' + item.levelname + '</td><td data-termid='+item.termid+'>' + item.term + '</td><td><a class="btn btn-info btn-sm" onclick="modifygainer(' + item.id + ')">修改</a><a style="margin-left:5px;" class="btn btn-danger btn-sm" onclick="delegainer(' + item.id + ')">删除</a></td></tr>');
 				});
 			} else {
 				window.console.log(result.code + ':' + result.desc);
@@ -260,9 +271,9 @@ if (!$role['admin']) {
 		dataType: 'json',
 		success: function(result) {
 			if(result.code == 0) {
-				$('#gainer-levelid,#export-').append('<option>请选择</option>');
+				$('#gainer-levelid,#export-levelid').append('<option value="">请选择</option>');
 				$.each(result.data, function(i, item) {
-					$('#gainer-levelid，#modify-gainer-levelid').append('<option value=' + item.stuid + '>' + item.levelname + '</option>');
+					$('#gainer-levelid,#modify-gainer-levelid,#export-levelid').append('<option value=' + item.id + '>' + item.levelname + '</option>');
 				});
 			} else {
 				window.console.log(result.code + ':' + result.desc);
@@ -278,21 +289,89 @@ if (!$role['admin']) {
 		dataType: 'json',
 		success: function(result) {
 			if(result.code == 0) {
-				$('#gainer-termid').append('<option>请选择</option>');
+				$('#gainer-termid,#export-termid').append('<option value="">请选择</option>');
 				$.each(result.data, function(i, item) {
-					$('#gainer-termid,#modify-gainer-termid').append('<option value' + item.id + '>' + item.title + '</option>');
+					$('#gainer-termid,#modify-gainer-termid,#export-termid').append('<option value=' + item.id + '>' + item.title + '</option>');
 				});
 			} else {
 				window.console.log(result.code + ':' + result.desc);
 			}
 		}
 	});
+	$.ajax({
+	    url: '/Ajax/schoolAjax.php',
+	    type: 'get',
+	    data: {
+            action:'getlist'
+	    },
+	    dataType: 'json',
+	    success: function (result) {
+	        if (result.code == 0) {
+	            $('#export-school').append('<option value="">请选择</option>');
+	            $.each(result.data, function (i, item) {
+	                $('#export-school').append('<option value='+item.id+'>'+item.name+'</option>');
+	            });
+	        } else {
+	            window.console.log(result.code+':'+result.desc);
+	        }
+	    }
+	});
+	$('#export-school').change(function () {
+	    $('#export-major,#export-classid').empty().val('');
+	    var schoolid = $(this).val();
+	    if (schoolid != '') {
+	        $.ajax({
+	            url: '/Ajax/majorAjax.php',
+	            type: 'get',
+	            data: {
+	                action: 'getlist',
+                    schoolid:schoolid
+	            },
+	            dataType: 'json',
+	            success: function (result) {
+	                if (result.code == 0) {
+	                    $('#export-major').append('<option value="">请选择</option>');
+	                    $.each(result.data, function (i, item) {
+	                        $('#export-major').append('<option value='+item.id+'>'+item.name+'</option>');
+	                    });
+	                } else {
+	                    window.console.log(result.code+':'+result.desc);
+	                }
+	            }
+	        });
+	    }
+	});
+	$('#export-major').change(function () {
+	    $('#export-classid').empty().val('');
+	    var majorid = $(this).val();
+	    if (majorid != '') {
+	        $.ajax({
+	            url: '/Ajax/classAjax.php',
+	            type: 'get',
+	            data: {
+	                action: 'getlist',
+                    majorid:majorid
+	            },
+	            dataType: 'json',
+	            success: function (result) {
+	                if (result.code == 0) {
+	                    $('#export-classid').append('<option value="">请选择</option>');
+	                    $.each(result.data, function (i, item) {
+	                        $('#export-classid').append('<option value='+item.classid+'>'+item.classid+'</option>');
+	                    });
+	                } else {
+	                    window.console.log(result.code+':'+result.desc);
+	                }
+	            }
+	        });
+	    }
+	});
 	$('#gainer-submit').on('click', function() {
 		if($('#gainer-stuid').val() != '' && $('#gainer-levelid').val() != '' && $('#gainer-termid').val() != '') {
 			$.ajax({
 				url: '/Ajax/scholarshipgainerAjax.php',
 				data: {
-					action: 'add',
+					action: 'set',
 					stuid: $('#gainer-stuid').val(),
 					levelid: $('#gainer-levelid').val(),
 					termid: $('#gainer-termid').val()
@@ -303,12 +382,13 @@ if (!$role['admin']) {
 					if(result.code == 0) {
 						location.reload();
 					} else {
+					    alert(result.desc+':请检查该学号是否存在!');
 						window.console.log(result.code + ':' + result.desc);
 					}
 				}
 			});
 		} else {
-			$('#gainer-tip').html('请填写相关奖学金信息!');
+			$('#gainer-tip').html('请填写相关获奖人信息!');
 			window.setTimeout(function() {
 				$('#gainer-tip').html('');
 			}, 3000);
@@ -333,11 +413,12 @@ if (!$role['admin']) {
 	});
 	$('#modify-gainer-submit').click(function() {
 		$.ajax({
-			url: '/Ajax/scholarshipgainer.php',
+			url: '/Ajax/scholarshipgainerAjax.php',
 			type: 'post',
 			data: {
 				action: 'modify',
-				uid: $('#modify-gainer-uid').val(),
+				id: $('#modify-gainer-id').val(),
+                stuid:$('#modify-gainer-stuid').val(),
 				levelid: $('#modify-gainer-levelid').val(),
 				termid: $('#modify-gainer-termid').val()
 			},
@@ -351,14 +432,26 @@ if (!$role['admin']) {
 			}
 		});
 	});
+	$('#export-submit').click(function () {
+	    var fields = [];
+	    $.each($('.export-field:checked'), function (i, item) {
+	        fields.push($(this).val());
+	    });
+	    var school = $("#export-school").val();
+	    var major = $("#export-major").val();
+	    var class_ = $("#export-classid").val();
+	    var levelid = $('#export-levelid').val();
+	    var termid = $('#export-termid').val();
+	    location.href = '/Ajax/scholarshipgainerAjax.php?action=export&school=' + school + '&major=' + major + '&classid=' + class_ + '&levelid='+levelid+'&termid='+termid+'&fields=' + fields;
+	});
 });
 
 function modifygainer(id) {
 	var $tr = $('#' + id);
 	$('#modify-gainer-id').val(id);
 	$('#modify-gainer-stuid').val($tr.find('td:eq(1)').html());
-	$('#modify-gainer-levelid').val($tr.find('td:eq(2)').html());
-	$('#modify-gainer-termid').val($tr.find('td:eq(3)').html());
+	$('#modify-gainer-levelid').val($tr.find('td:eq(7)').data('levelid'));
+	$('#modify-gainer-termid').val($tr.find('td:eq(8)').data('termid'));
 	$('#btn-modify-gainer-mod').trigger('click');
 }
 
@@ -366,12 +459,12 @@ function delegainer(id) {
 	if(!(id instanceof Array)) {
 		id = [id];
 	}
-	if(confirm('确认删除?')) {
+	if (confirm('确认删除奖学金授予记录?')) {
 		$.ajax({
 			url: '/Ajax/scholarshipgainerAjax.php',
 			data: {
 				action: 'dele',
-				stuid: id
+				id: id
 			},
 			type: 'post',
 			dataType: 'json',
