@@ -38,7 +38,7 @@ class ScholarshipDAL
             if ($condition2[$key] != NULL)
                 $subsql2 .= "AND `$key`='$value' ";
 
-        $sql = "SELECT * FROM ($subsql2) AS T1 LEFT JOIN ($subsql1) AS T2 ON T1.stuid=T2.stuid ";
+        $sql = "SELECT * FROM ($subsql1) AS T1 LEFT JOIN ($subsql2) AS T2 ON T1.stuid=T2.stuid ";
 
         if ($page != NULL && is_numeric($page) && $page > 0) {
             $page -= 1;

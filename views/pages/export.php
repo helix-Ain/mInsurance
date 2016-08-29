@@ -456,7 +456,7 @@ if( !($role['admin']||$role['teacher'])) {
         $.ajax({
             url: '/Ajax/studentAjax.php',
             type: 'post',
-            data: { action: 'modify', stuid: stuid, insured: insured },
+            data: { action: 'modify', oldstuid: stuid, insured: insured },
             dataType: 'json',
             success: function (result) {
                 if (result.code == 0) {

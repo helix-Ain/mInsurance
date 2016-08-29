@@ -35,11 +35,16 @@ if ($action == 'getlist') {
 function getScholarshipGainerList($params)
 {
     $scholarshipDal = new ScholarshipDAL();
+    $schoolDal = new SchoolDAL();
     $info['school'] = isset($params['school']) ? $params['school'] : NULL;
     $info['major'] = isset($params['major']) ? $params['major'] : NULL;
     $info['classid'] = isset($params['classid']) ? $params['classid'] : NULL;
     $info['termid'] = isset($params['termid']) ? $params['termid'] : NULL;
     $info['levelid'] = isset($params['levelid']) ? $params['levelid'] : NULL;
+    if(Auth::TeacherCheck()){
+        $params['schoolid']=$_SESSION['teacher_schoolid'];
+        $info['school'] = $schoolDal->GetSchoolOne(['id'=>$params['schoolid']])['name'];
+    }
     $result = $scholarshipDal->GetScholarshipList($info);
     if ($result) {
         foreach($result as &$item){

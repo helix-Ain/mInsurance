@@ -1,6 +1,6 @@
 <?php
 include dirname(__FILE__) . '/../includes/header.php';
-if (!$role['admin']) {
+if (!($role['admin']||$role['teacher'])) {
 	echo 'Access Denied';
 	exit ;
 }

@@ -41,9 +41,14 @@ if ($action == 'getlist') {
 function getStudentList($params)
 {
     $studentDal = new StudentDAL();
+    $schoolDal  = new SchoolDAL();
     $info['school'] = isset($params['school']) ? $params['school'] : NULL;
     $info['major'] = isset($params['major']) ? $params['major'] : NULL;
     $info['classid'] = isset($params['classid']) ? $params['classid'] : NULL;
+    if(Auth::TeacherCheck()){
+        $params['schoolid']=$_SESSION['teacher_schoolid'];
+        $info['school'] = $schoolDal->GetSchoolOne(['id'=>$params['schoolid']])['name'];
+    }
     $result = $studentDal->GetStudentList($info);
     if ($result) {
         $response = array(
@@ -144,7 +149,7 @@ function modifyStudent($params)
 {
     $studentDal = new StudentDAL();
     $scholarshipDal = new ScholarshipDAL();
-    $oldstuid = $params['oldstuid'];
+    $oldstuid =  isset($params['oldstuid'])?$params['oldstuid']:NULL;
     $info['stuid'] = isset($params['stuid'])?$params['stuid']:NULL;
     $info['name'] = isset($params['name'])?$params['name']:NULL;
     $info['identification'] = isset($params['identification']) ? $params['identification'] : NULL;

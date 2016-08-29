@@ -102,10 +102,16 @@
                 dataType: 'json',
                 success: function (result) {
                     if (result.code == 0) {
-                        $.each(result.data, function (i, item) {
+                        if(result.data instanceof Array){
+                        	$.each(result.data, function (i, item) {
                             var day = new Date(item.logintime * 1000);
                             $('#admin-info').append('<tr>' + '<td>' + item.username + '</td>' + '<td>' + day.toLocaleString() + '</td>' + '<td>' + item.loginip + '</td>' + '</tr>');
                         });
+                        }else{
+                        	 var day = new Date(result.data.logintime * 1000);
+                            $('#admin-info').append('<tr>' + '<td>' + result.data.username + '</td>' + '<td>' + day.toLocaleString() + '</td>' + '<td>' + result.data.loginip + '</td>' + '</tr>');
+                        }
+                   
                     }
                 }
             });
