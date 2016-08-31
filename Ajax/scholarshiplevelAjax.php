@@ -16,6 +16,7 @@ if (!Auth::AdminCheck() && !(Auth::TeacherCheck() && $_REQUEST['action'] == 'get
     exit();
 }
 $action = $_REQUEST['action'];
+unset($_REQUEST['action']);
 if ($action == 'getlist')
     getScholarshipLevelList($_REQUEST);
 else if ($action == 'dele')
@@ -57,7 +58,7 @@ function deleScholarshipLevel($params)
     $flag = true;
     foreach ($info['id'] as $id) {
         $flag = $flag && $scholarshipDal->DeleteLevel(['id' => $id]);
-		$flag = $flag && $scholarshipDal->UnsetGainer(['levelid'=>$id]);
+		$scholarshipDal->UnsetGainer(['levelid'=>$id]);
     }
     if ($flag)
         $response = array(

@@ -7,7 +7,9 @@
  */
 require_once dirname(__FILE__) . '/../include/global.php';
 header('Content-Type:text/plain; charset=UTF-8');
-if (!Auth::AdminCheck() && !(Auth::TeacherCheck() && $_REQUEST['action']=='getlist')) {
+//if (!Auth::AdminCheck() && !(Auth::TeacherCheck() && $_REQUEST['action']=='getlist')) {
+//暂时对教师开放点权限先
+if (!Auth::AdminCheck() && !Auth::TeacherCheck()) {
     $response = array(
         'code' => 2,
         'desc' => '未登录'
@@ -16,6 +18,7 @@ if (!Auth::AdminCheck() && !(Auth::TeacherCheck() && $_REQUEST['action']=='getli
     exit();
 }
 $action = $_REQUEST['action'];
+unset($_REQUEST['action']);
 if ($action == 'getlist')
     getClassList($_REQUEST);
 else if ($action == 'dele')
@@ -76,9 +79,9 @@ function deleClass($params)
         $flag = $flag && $classDal->DeleteClass(['classid' => $id]);
 		$students = $studentDal->GetStudentList(['classid'=>$id]);
 		foreach($students as $student){
-			$flag = $flag && $scholarshipDal->UnsetGainer(['stuid'=>$student['stuid']]);
+			$scholarshipDal->UnsetGainer(['stuid'=>$student['stuid']]);
 		}
-		$flag = $flag && $studentDal->DeleteStudent(['classid'=>$id]);
+		$studentDal->DeleteStudent(['classid'=>$id]);
     }
     if ($flag)
         $response = array(

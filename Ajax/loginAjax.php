@@ -10,6 +10,7 @@
  */
 require_once dirname(__FILE__).'/../include/global.php';
 $action=$_REQUEST['action'];
+unset($_REQUEST['action']);
 if($action=='checkLogin')
     checkLogin($_REQUEST);
 else if ($action=='getCode')

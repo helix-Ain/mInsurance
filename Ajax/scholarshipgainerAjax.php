@@ -17,6 +17,7 @@ if (!Auth::TeacherCheck() && !Auth::AdminCheck()) {
     exit();
 }
 $action = $_REQUEST['action'];
+unset($_REQUEST['action']);
 if ($action == 'getlist') {
     getScholarshipGainerList($_REQUEST);
 } else if ($action == 'set') {
@@ -95,14 +96,14 @@ function setScholarshipGainer($params)
 function deleScholarshipGainer($params)
 {
     $scholarshipDal = new ScholarshipDAL();
-    if(!is_array($params['stuid'])){
-        $info['stuid'] = explode(',',$params['stuid']);
+    if(!is_array($params['id'])){
+        $info['id'] = explode(',',$params['id']);
     }else{
-        $info['stuid'] = explode(',',$params['stuid']);
+        $info['id'] = $params['id'];
     }
     $flag = true;
-    foreach ($info['stuid'] as $id) {
-        $flag = $flag && $scholarshipDal->UnsetGainer(['stuid' => $id]);
+    foreach ($info['id'] as $id) {
+        $flag = $flag && $scholarshipDal->UnsetGainer(['id' => $id]);
     }
     if ($flag) {
         $response = array(

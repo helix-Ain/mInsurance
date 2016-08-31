@@ -17,6 +17,7 @@ if (!Auth::TeacherCheck() && !Auth::AdminCheck()) {
     exit();
 }
 $action = $_REQUEST['action'];
+unset($_REQUEST['action']);
 if ($action == 'getlist') {
     getStudentList($_REQUEST);
 } else if ($action == 'getone') {
@@ -128,7 +129,7 @@ function deleStudent($params)
     $flag = true;
     foreach ($info['stuid'] as $id) {
         $flag = $flag && $studentDal->DeleteStudent(['stuid' => $id]);
-		$flag = $flag && $scholarshipDal->UnsetGainer(['stuid'=>$id]);
+		$scholarshipDal->UnsetGainer(['stuid'=>$id]);
     }
     if ($flag) {
         $response = array(
@@ -190,7 +191,7 @@ function exportStudent($params)
     }
     unset($info['schoolid'],$info['majorid']);
     if(Auth::TeacherCheck()){
-        $info['school']=  $schoolDal->GetSchoolOne(['id'=>$_SESSION['teacher_schoolid']]);
+        $info['school']=  $schoolDal->GetSchoolOne(['id'=>$_SESSION['teacher_schoolid']])['name'];
     }
     $info['classid'] = isset($params['classid']) && $params['classid'] != '' && $params['classid']!='null' ? $params['classid'] : NULL;
     $info['insured'] = isset($params['insured']) && $params['insured'] != '' ? $params['insured'] : NULL;
@@ -199,7 +200,7 @@ function exportStudent($params)
 	}else{
 		$fields = $params['fields'];
 	}
-    $result = Yibao::exportExcelByField($info,$fields);
+    $result = (bool)Yibao::exportExcelByField($info,$fields);
     if($result) {
         $response = array(
             'code' => 0,

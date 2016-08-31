@@ -239,7 +239,7 @@
 <body>
 
     <div class="login-box">
-        <h1>医保系统后台登录</h1>
+        <h1>系统后台登录</h1>
             <div class="name">
                 <label>登陆账号：</label>
                 <input type="text" name="username" id="username" tabindex="1" autocomplete="off" />

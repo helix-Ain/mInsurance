@@ -16,6 +16,7 @@ if (!Auth::AdminCheck() && !(Auth::TeacherCheck() && $_REQUEST['action']=='getli
     exit();
 }
 $action = $_REQUEST['action'];
+unset($_REQUEST['action']);
 if ($action == 'getlist')
     getSchoolList($_REQUEST);
 else if ($action == 'dele')

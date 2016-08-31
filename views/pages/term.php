@@ -209,7 +209,7 @@ if(!$role['admin']) {
         $('#modify-term-submit').click(function () {
             if (confirm('确认修改学期,该操作将修改学期下所有的授奖信息?'))
             $.ajax({
-                url: '/Ajax/scholarshipterm.php',
+                url: '/Ajax/scholarshiptermAjax.php',
                 type: 'post',
                 data: { action:'modify',id:$('#modify-term-id').val(),title: $('#modify-term-title').val(), starttime: $('#modify-term-starttime').val(), endtime: $('#modify-term-endtime').val(), enabled: $('#modify-term-enabled').val() },
                 dataType: 'json',
@@ -230,7 +230,11 @@ if(!$role['admin']) {
         $('#modify-term-title').val($tr.find('td:eq(1)').html());
         $('#modify-term-starttime').val($tr.find('td:eq(2)').html());
         $('#modify-term-endtime').val($tr.find('td:eq(3)').html());
-        $('#modify-term-enabled').val($tr.find('td:eq(4)').html());
+        if ($tr.find('td:eq(4)').children(0).html() == '启用') {
+            $('#modify-term-enabled').val(1);
+        } else {
+            $('#modify-term-enabled').val(0);
+        }
         $('#btn-modify-term-mod').trigger('click');
     }
     function deleterm(id) {

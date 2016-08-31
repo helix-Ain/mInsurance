@@ -18,6 +18,7 @@ if (!Auth::AdminCheck()&&!Auth::TeacherCheck()) {
     exit();
 }
 $action=$_REQUEST['action'];
+unset($_REQUEST['action']);
 if($action=='logout')
     logout($_REQUEST);
 else if ($action=='getLoginInfo')

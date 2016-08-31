@@ -23,7 +23,7 @@ class StudentDAL
         $this->db->query("set names utf8");
     }
 
-    public function GetStudentList($condition = array('school' => NULL, 'major' => NULL, 'classid' => NULL, 'stuid' => NULL, 'name' => NULL, 'identification' => NULL,), $page = NULL)
+    public function GetStudentList($condition = array('school' => NULL, 'major' => NULL, 'classid' => NULL, 'stuid' => NULL, 'name' => NULL, 'identification' => NULL), $page = NULL)
     {
         $sql = 'SELECT * FROM `student` WHERE 1 ';
         foreach ($condition as $key => $value)

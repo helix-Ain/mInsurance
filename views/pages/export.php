@@ -255,7 +255,7 @@ if( !($role['admin']||$role['teacher'])) {
             $.ajax({
                 url: '/Ajax/studentAjax.php',
                 type: 'post',
-                data: { action: 'modify',oldstuid:$('#modify-student-oldstuid').val(), stuid: $('#modify-student-stuid').val(), name: $('#modify-student-name').val(), identification: $('#modify-student-identification').val(), sex: $('input[name="modify-student-sex"]:checked').val(), birthday: $('#modify-student-birthday').val(), school: $('#modify-student-school').val(), major: $('#modify-student-major').val(), class: $('#modify-student-class').val(), note: $('#modify-student-note').val() },
+                data: { action: 'modify',oldstuid:$('#modify-student-oldstuid').val(), stuid: $('#modify-student-stuid').val(), name: $('#modify-student-name').val(), identification: $('#modify-student-identification').val(), sex: $('input[name="modify-student-sex"]:checked').val(), birthday: $('#modify-student-birthday').val(), school: $('#modify-student-school').val(), major: $('#modify-student-major').val(), classid: $('#modify-student-classid').val(), note: $('#modify-student-note').val() },
                 dataType: 'json',
                 success: function (result) {
                     if (result.code == 0) {
@@ -309,6 +309,29 @@ if( !($role['admin']||$role['teacher'])) {
             }
         });
 
+        $('#modify-student-school').change(function () {
+            $('#modify-student-major,#modify-student-classid').empty().val('');
+            if ($(this).val() != '') {
+                $.ajax({
+                    url: '/Ajax/majorAjax.php',
+                    type: 'get',
+                    data: { action: 'getlist', school: $('#modify-student-school').val() },
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.code == 0) {
+                            $('#modify-student-major').append('<option value="">请选择</option>');
+                            $.each(result.data, function (i, item) {
+                                $('#modify-student-major').append('<option value=' + item.name + '>' + item.name + '</option>');
+                            });
+                        }
+                        else {
+                            window.console.log(result.code + ':' + result.desc);
+                        }
+                    }
+                });
+            }
+        });
+
         $('#export-major').change(function () {
             $('#export-classid').empty().val('');
             if ($(this).val() != '') {
@@ -333,24 +356,26 @@ if( !($role['admin']||$role['teacher'])) {
         });
 
         $('#modify-student-major').change(function(){
-            $('#modify-student-class').empty().val('');
-            $.ajax({
-                url: '/Ajax/classAjax.php',
-                type: 'get',
-                data: {action:'getlist',major:$(this).val()},
-                dataType:'json',
-                success: function(result){
-                    if(result.code==0){
-                         $('#modify-student-class').append('<option value="">请选择</option>');
-                         $.each(result.data,function(i,item){
-                             $('#modify-student-class').append('<option value='+item.classid+'>'+item.classid+'</option>');
-                         });
+            $('#modify-student-classid').empty().val('');
+            if ($(this).val() != '') {
+                $.ajax({
+                    url: '/Ajax/classAjax.php',
+                    type: 'get',
+                    data: { action: 'getlist', major: $(this).val() },
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.code == 0) {
+                            $('#modify-student-classid').append('<option value="">请选择</option>');
+                            $.each(result.data, function (i, item) {
+                                $('#modify-student-classid').append('<option value=' + item.classid + '>' + item.classid + '</option>');
+                            });
+                        }
+                        else {
+                            window.console.log(result.code + ':' + result.desc);
+                        }
                     }
-                    else{
-                        window.console.log(result.code+':'+result.desc);
-                    }
-                }
-            });
+                });
+            }
         });
         $('#export-submit').click(function () {
             var fields = [];

@@ -7,7 +7,9 @@
  */
 require_once dirname(__FILE__) . '/../include/global.php';
 header('Content-Type:text/plain; charset=UTF-8');
-if (!Auth::AdminCheck() && !(Auth::TeacherCheck() && $_REQUEST['action']=='getlist')) {
+//if (!Auth::AdminCheck() && !(Auth::TeacherCheck() && $_REQUEST['action']=='getlist')) {
+//暂时对教师开放点权限先
+if (!Auth::AdminCheck() && !Auth::TeacherCheck()) {
     $response = array(
         'code' => 2,
         'desc' => '未登录'
@@ -16,6 +18,7 @@ if (!Auth::AdminCheck() && !(Auth::TeacherCheck() && $_REQUEST['action']=='getli
     exit();
 }
 $action = $_REQUEST['action'];
+unset($_REQUEST['action']);
 if ($action == 'getlist')
     getMajorList($_REQUEST);
 else if ($action == 'dele')
@@ -43,7 +46,6 @@ function getMajorList($params)
         foreach($majorList as &$major) {
             $major['school']=$schoolDal->GetSchoolOne(array('id'=>$major['schoolid']))['name'];
         }
-        unset($major);
         $response = array(
             'code' => 0,
             'data' => $majorList,
@@ -70,14 +72,14 @@ function deleMajor($params)
     }
     $flag = true;
     foreach ($info['id'] as $id) {
-    	$major = $flag && $majorDal->GetMajorOne(['id'=>$id]);
+    	$major = $majorDal->GetMajorOne(['id'=>$id])['name'];
         $flag = $flag && $majorDal->DeleteMajor(['id' => $id]);
-		$flag = $flag && $classDal->DeleteClass(['majorid'=>$id]);
+		$classDal->DeleteClass(['majorid'=>$id]);
 		$students = $studentDal->GetStudentList(['major'=>$major]);
 		foreach($students as $student){
-			$flag = $flag && $scholarshipDal->UnsetGainer(['stuid'=>$student['stuid']]);
+			$scholarshipDal->UnsetGainer(['stuid'=>$student['stuid']]);
 		}
-		$flag = $flag && $studentDal->DeleteStudent(['major'=>$major]);
+		$studentDal->DeleteStudent(['major'=>$major]);
     }
     if ($flag)
         $response = array(
@@ -114,7 +116,7 @@ function modifyMajor($params)
     $majorDal   = new MajorDAL();
     $schoolDal = new SchoolDAL();
     $studentDal = new StudentDAL();
-    $oldmajorname = $majorDAL->GetMajorOne(['id'=>$$params['id']])['name'];
+    $oldmajorname = $majorDal->GetMajorOne(['id'=>$$params['id']])['name'];
     $info['name'] = isset($params['name']) ? $params['name'] : NULL;
     $info['schoolid'] = isset($params['schoolid']) ? $params['schoolid'] : NULL;
     $schoolname = $schoolDal->GetSchoolOne(['id'=>$info['schoolid']])['name'];

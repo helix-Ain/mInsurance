@@ -240,7 +240,6 @@ if (!($role['admin']||$role['teacher'])) {
 		},
 		dataType: 'json',
 		success: function (result) {
-		    window.console.log(result);
 		    if (result.code == 0) {
 				$.each(result.data, function(i, item) {
 					var day = new Date(item.logintime * 1000);
@@ -284,11 +283,12 @@ if (!($role['admin']||$role['teacher'])) {
 		url: '/Ajax/scholarshiptermAjax.php',
 		type: 'get',
 		data: {
-			action: 'getlist'
+		    action: 'getlist',
+            enabled:1
 		},
 		dataType: 'json',
-		success: function(result) {
-			if(result.code == 0) {
+		success: function (result) {
+		    if (result.code == 0) {        
 				$('#gainer-termid,#export-termid').append('<option value="">请选择</option>');
 				$.each(result.data, function(i, item) {
 					$('#gainer-termid,#modify-gainer-termid,#export-termid').append('<option value=' + item.id + '>' + item.title + '</option>');
